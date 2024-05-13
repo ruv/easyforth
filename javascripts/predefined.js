@@ -205,8 +205,8 @@ function addPredefinedWords(addToDictionary, readLines, next) {
     ": ?       @ . ;",
     ": +!      dup @ rot + swap ! ;",
 
-    "variable  graphics", // start of graphics memory
-    "575 cells allot", // graphics memory takes 24 * 24 = 576 cells altogether
+    "create  graphics", // start of graphics memory
+    "576 cells allot", // graphics memory takes 24 * 24 = 576 cells altogether
     "variable  last-key", // create last-key variable for keyboard input
   ], next);
 }

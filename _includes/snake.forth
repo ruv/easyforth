@@ -1,7 +1,7 @@
-variable snake-x-head
+create snake-x-head
 500 cells allot
 
-variable snake-y-head
+create snake-y-head
 500 cells allot
 
 variable apple-x

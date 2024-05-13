@@ -605,8 +605,8 @@ are defined in one line, like this:
     42 constant answer
 
 This creates a new constant called `answer` with the value `42`. Unlike variables,
-constants just represent values, rather than memory locations, so there's no need
-to use `@`.
+constants just represent any values, rather than only memory locations, so there's
+_usually_ no need to use `@`.
 
     42 constant answer
     2 answer *
@@ -619,12 +619,11 @@ was the number it represents (just like constants and variables in other languag
 
 ## Arrays
 
-Forth doesn't exactly support arrays, but it does allow you to allocate a zone of
-contiguous memory, a lot like arrays in C. To allocate this memory, use the `allot`
-word.
+Forth doesn't exactly support arrays, but it does allow you to reserve a region of
+contiguous memory, a lot like arrays in C.
+Use the `create` word to define the start of the region, and `allot` to reserve the memory.
 
-    variable numbers
-    3 cells allot
+    create numbers  4 cells allot
     10 numbers 0 cells + !
     20 numbers 1 cells + !
     30 numbers 2 cells + !
@@ -632,17 +631,17 @@ word.
 
 {% include editor.html size="small"%}
 
-This example creates a memory location called `numbers`, and reserves three extra
-memory cells after this location, giving a total of four memory cells. (`cells`
-just multiplies by the cell-width, which is 1 in this implementation.)
+This example creates a word called `numbers`, which returns the location of the memory region,
+and reserves four memory cells for this region.
+(`cells` just multiplies by the cell-width, which is 1 in this implementation.)
 
-`numbers 0 +` gives the address of the first cell in the array. `10 numbers 0 + !`
+`numbers 0 +` gives the location of the first cell in the array. `10 numbers 0 + !`
 stores the value `10` in the first cell of the array.
 
 We can easily write words to simplify array access:
 
-    variable numbers
-    3 cells allot
+    create numbers
+    4 cells allot
     : number  ( offset -- addr )  cells numbers + ;
 
     10 0 number !
@@ -654,7 +653,7 @@ We can easily write words to simplify array access:
 
 {% include editor.html size="small"%}
 
-`number` takes an offset into `numbers` and returns the memory address at that
+`number` takes an offset into `numbers` and returns the memory location at that
 offset. `30 2 number !` stores `30` at offset `2` in `numbers`, and `2 number ?`
 prints the value at offset `2` in `numbers`.
 
@@ -725,8 +724,8 @@ techniques in order to interface with JavaScript. I'll go through these now.
 You may have noticed that this editor is different from the others: it has an HTML5
 Canvas element built in. I've created a very simple memory-mapped interface for
 drawing onto this canvas. The canvas is split up into 24 x 24 "pixels" which can
-be black or white. The first pixel is found at the memory address given by the
-variable `graphics`, and the rest of the pixels are offsets from the variable. So,
+be black or white. The first pixel is found at the memory location given by the
+constant `graphics`, and the rest of the pixels are offsets from this location. So,
 for example, to draw a white pixel in the top-left corner you could run
 
     1 graphics !
@@ -766,14 +765,14 @@ number of milliseconds given.
 
 Now we can work through the code from start to finish.
 
-#### Variables and Constants
+#### Arrays, Variables, and Constants
 
-The start of the code just sets up some variables and constants:
+The start of the code just sets up some arrays, variables, and constants:
 
-    variable snake-x-head
+    create snake-x-head
     500 cells allot
 
-    variable snake-y-head
+    create snake-y-head
     500 cells allot
 
     variable apple-x
@@ -791,7 +790,7 @@ The start of the code just sets up some variables and constants:
     variable length
 
 `snake-x-head` and `snake-y-head` are memory locations used to store the x and
-y coordinates of the head of the snake. 500 cells of memory are alloted after
+y coordinates of the head of the snake. 500 cells of memory are alloted starting
 these two locations to store the coordinates of the tail of the snake.
 
 Next we define two words for accessing memory locations representing the body
