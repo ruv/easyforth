@@ -65,7 +65,7 @@ function Forth(next) {
   }
 
   function createCreate(name) {
-    var pointer = context.memory.here();
+    var pointer = context.memory.addCreate(name, 0);
     addToDictionary(name, function (context) {
       context.stack.push(pointer);
     });

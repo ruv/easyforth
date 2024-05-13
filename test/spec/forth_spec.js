@@ -837,6 +837,11 @@ describe('Forth', function () {
           function () {
             collectOutput(forth.readLine, 'create foo 4 cells allot', this);
           },
+          function () {
+            const m = forth.q('context').memory ;
+            expect( m.here() - m.getVariable('foo') ).toBe( 4 );
+            done();
+          },
           function (output) {
             expect(output).toBe(" ok");
             forth.readLines([
