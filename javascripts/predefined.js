@@ -8,7 +8,7 @@ function addPredefinedWords(addToDictionary, readLines, next) {
 
   [
     ":", ";", "if", "else", "then", "do", "loop",
-    "+loop", "begin", "until", "variable", "constant", "key"
+    "+loop", "begin", "until", "create", "variable", "constant", "key"
   ].forEach(function (code) {
     addToDictionary(code, controlCode(code));
   });
@@ -145,6 +145,10 @@ function addPredefinedWords(addToDictionary, readLines, next) {
   addToDictionary("@", function (context) {
     var address = context.stack.pop();
     context.stack.push(context.memory.getValue(address));
+  });
+
+  addToDictionary("here", function (context) {
+    context.stack.push( context.memory.here() );
   });
 
   addToDictionary("allot", function (context) {

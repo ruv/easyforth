@@ -6,6 +6,16 @@ describe('Memory', function() {
     memory = Memory();
   });
 
+  it('allot data space', function () {
+    let h1 = memory.here();
+    memory.allot(10);
+    let h2 = memory.here();
+    expect( h2 - h1 ).toBe(10);
+    memory.allot(-5);
+    let h3 = memory.here();
+    expect( h3 - h1 ).toBe(5);
+  });
+
   it('adding variables', function () {
     memory.addVariable("foo");
     var pointerFoo = memory.getVariable("foo");

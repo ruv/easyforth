@@ -26,6 +26,10 @@ function Memory() {
     return memArray[address] || 0;
   }
 
+  function here() { // -- addr
+    return _memPointer;
+  }
+
   function allot(cells) {
     _memPointer += cells;
   }
@@ -35,6 +39,7 @@ function Memory() {
     getVariable: getVariable,
     setValue: setValue,
     getValue: getValue,
+    here: here,
     allot: allot
   };
 }

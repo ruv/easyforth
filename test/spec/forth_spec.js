@@ -830,6 +830,28 @@ describe('Forth', function () {
       });
     });
 
+    describe('create and here', function () {
+      it('creates a word with "create" and allots data space', function (done) {
+        // done(); return;
+        executeInSequence([
+          function () {
+            collectOutput(forth.readLine, 'create foo 4 cells allot', this);
+          },
+          function (output) {
+            expect(output).toBe(" ok");
+            forth.readLines([
+              'here foo -',
+              '4 cells ='
+            ], this);
+          },
+          function () {
+            expect(forth.getStack()).toBe("-1 <- Top ");
+            done();
+          }
+        ]);
+      });
+    });
+
     describe('variables', function () {
       it('saves and retrieves values from different variables', function (done) {
         executeInSequence([

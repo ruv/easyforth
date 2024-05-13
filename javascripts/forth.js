@@ -64,6 +64,13 @@ function Forth(next) {
     addToDictionary(name, definition);
   }
 
+  function createCreate(name) {
+    var pointer = context.memory.here();
+    addToDictionary(name, function (context) {
+      context.stack.push(pointer);
+    });
+  }
+
   function createVariable(name) {
     var pointer = context.memory.addVariable(name);
     addToDictionary(name, function (context) {
@@ -96,6 +103,9 @@ function Forth(next) {
 
   function executeRuntimeAction(tokenizer, action, next) {
     switch (action.code) {
+    case "create":
+      createCreate(tokenizer.nextToken().value);
+      break;
     case "variable":
       createVariable(tokenizer.nextToken().value);
       break;
