@@ -18,18 +18,18 @@ variable apple-y
 variable direction
 variable length
 
-: snake-x ( offset -- address )
+: snake-x ( +n.offset -- a-addr )
   cells snake-x-head + ;
 
-: snake-y ( offset -- address )
+: snake-y ( +n.offset -- a-addr )
   cells snake-y-head + ;
 
-: convert-x-y ( x y -- offset )  24 cells * + ;
-: draw ( color x y -- )  convert-x-y graphics + ! ;
-: draw-white ( x y -- )  1 rot rot draw ;
-: draw-black ( x y -- )  0 rot rot draw ;
+: convert-x-y ( +n.x +n.y -- +n.offset )  width cells * + ;
+: draw ( +n.color +n.x +n.y -- )  convert-x-y graphics + ! ;
+: draw-white ( +n.x +n.y -- )  1 rot rot draw ;
+: draw-black ( +n.x +n.y -- )  0 rot rot draw ;
 
-: draw-walls
+: draw-walls ( -- )
   width 0 do
     i 0 draw-black
     i height 1 - draw-black
@@ -39,7 +39,7 @@ variable length
     width 1 - i draw-black
   loop ;
 
-: initialize-snake
+: initialize-snake ( -- )
   4 length !
   length @ 1 + 0 do
     12 i - i snake-x !
@@ -47,11 +47,11 @@ variable length
   loop
   right direction ! ;
 
-: set-apple-position apple-x ! apple-y ! ;
+: set-apple-position ( +n.x +n.y -- ) apple-y ! apple-x ! ;
 
-: initialize-apple  4 4 set-apple-position ;
+: initialize-apple ( -- ) 4 4 set-apple-position ;
 
-: initialize
+: initialize ( -- )
   width 0 do
     height 0 do
       j i draw-white
@@ -61,60 +61,62 @@ variable length
   initialize-snake
   initialize-apple ;
 
-: move-up  -1 snake-y-head +! ;
-: move-left  -1 snake-x-head +! ;
-: move-down  1 snake-y-head +! ;
-: move-right  1 snake-x-head +! ;
+: move-up     ( -- ) -1 snake-y-head +! ;
+: move-left   ( -- ) -1 snake-x-head +! ;
+: move-down   ( -- )  1 snake-y-head +! ;
+: move-right  ( -- )  1 snake-x-head +! ;
 
-: move-snake-head  direction @
-  left over  = if move-left else
-  up over    = if move-up else
-  right over = if move-right else
-  down over  = if move-down
+: move-snake-head ( -- )  direction @
+  left  over =  if move-left  else
+  up    over =  if move-up    else
+  right over =  if move-right else
+  down  over =  if move-down  else
+    \ do nothing
   then then then then drop ;
 
 \ Move each segment of the snake forward by one
-: move-snake-tail  0 length @ do
+: move-snake-tail ( -- )  0 length @ do
     i snake-x @ i 1 + snake-x !
     i snake-y @ i 1 + snake-y !
   -1 +loop ;
 
-: is-horizontal  direction @ dup
+: is-horizontal ( -- flag )  direction @ dup
   left = swap
   right = or ;
 
-: is-vertical  direction @ dup
+: is-vertical   ( -- flag )  direction @ dup
   up = swap
   down = or ;
 
-: turn-up     is-horizontal if up direction ! then ;
-: turn-left   is-vertical if left direction ! then ;
-: turn-down   is-horizontal if down direction ! then ;
-: turn-right  is-vertical if right direction ! then ;
+: turn-up     ( -- ) is-horizontal  if up     direction ! then ;
+: turn-left   ( -- ) is-vertical    if left   direction ! then ;
+: turn-down   ( -- ) is-horizontal  if down   direction ! then ;
+: turn-right  ( -- ) is-vertical    if right  direction ! then ;
 
-: change-direction ( key -- )
-  37 over = if turn-left else
-  38 over = if turn-up else
-  39 over = if turn-right else
-  40 over = if turn-down
+: change-direction ( c.key -- )
+  37 over = if turn-left    else
+  38 over = if turn-up      else
+  39 over = if turn-right   else
+  40 over = if turn-down    else
+    \ do nothing
   then then then then drop ;
 
-: check-input
+: check-input ( -- )
   last-key @ change-direction
   0 last-key ! ;
 
 \ get random x or y position within playable area
-: random-position ( -- pos )
+: random-position ( -- +n.pos )
   width 4 - random 2 + ;
 
-: move-apple
+: move-apple ( -- )
   apple-x @ apple-y @ draw-white
   random-position random-position
   set-apple-position ;
 
-: grow-snake  1 length +! ;
+: grow-snake ( -- )  1 length +! ;
 
-: check-apple
+: check-apple ( -- )
   snake-x-head @ apple-x @ =
   snake-y-head @ apple-y @ =
   and if
@@ -132,7 +134,7 @@ variable length
   \ leave boolean flag on stack
   0 = ;
 
-: draw-snake
+: draw-snake ( -- )
   length @ 0 do
     i snake-x @ i snake-y @ draw-black
   loop
@@ -140,7 +142,7 @@ variable length
   length @ snake-y @
   draw-white ;
 
-: draw-apple
+: draw-apple ( -- )
   apple-x @ apple-y @ draw-black ;
 
 
@@ -157,4 +159,4 @@ variable length
   until
   ." Game Over" ;
 
-: start  initialize game-loop ;
+: start ( -- )  initialize game-loop ;

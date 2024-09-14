@@ -114,10 +114,12 @@ precedence.
 
 Most Forth words affect the stack in some way. Some take values off the stack,
 some leave new values on the stack, and some do a mixture of both. These "stack
-effects" are commonly represented using comments of the form `( before -- after
-)`. For example, `+` is `( n1 n2 -- sum )` - `n1` and `n2` are the top two numbers
-on the stack, and `sum` is the value left on the stack.
-
+effects" are commonly represented using comments of the form `( before -- after )`.
+For example, `+` is `( n1 n2 -- n.sum )` - `n1` and `n2` are the top two numbers
+on the stack, and `n.sum` is the value left on the stack, `n` is a data type symbol.
+See also: Forth-2012
+[2.2.2 Stack notation](https://forth-standard.org/standard/notation#subsection.2.2.2),
+[3.1 Data types](https://forth-standard.org/standard/usage#usage:data).
 
 ## Defining Words
 
@@ -642,7 +644,7 @@ We can easily write words to simplify array access:
 
     create numbers
     4 cells allot
-    : number  ( offset -- addr )  cells numbers + ;
+    : number  ( n.offset -- a-addr )  cells numbers + ;
 
     10 0 number !
     20 1 number !
@@ -734,10 +736,10 @@ for example, to draw a white pixel in the top-left corner you could run
 
 The game uses the following words to draw to the canvas:
 
-    : convert-x-y ( x y -- offset )  24 cells * + ;
-    : draw ( color x y -- )  convert-x-y graphics + ! ;
-    : draw-white ( x y -- )  1 rot rot draw ;
-    : draw-black ( x y -- )  0 rot rot draw ;
+    : convert-x-y ( n.x n.y -- n.offset )  24 cells * + ;
+    : draw ( +n.color n.x n.y -- )  convert-x-y graphics + ! ;
+    : draw-white ( n.x n.y -- )  1 rot rot draw ;
+    : draw-black ( n.x n.y -- )  0 rot rot draw ;
 
 For example, `3 4 draw-white` draws a white pixel at the coordinates (3, 4). The
 y coordinate is multiplied by 24 to get the row, then the x coordinated is added
@@ -752,11 +754,11 @@ pressed. `last-key` is only updated while the interpreter is running Forth code.
 #### Random Number Generation
 
 The Forth standard doesn't define a way of generating random numbers, so I've
-added a word called `random ( range -- n )` that takes a range and returns a
-random number from 0 to range - 1. For example, `3 random` could
+added a word called `random ( +n.range -- +n )` that takes a range and returns a
+random number from 0 to min(0, range - 1). For example, `3 random` could
 return `0`, `1`, or `2`.
 
-#### `sleep ( ms -- )`
+#### `sleep ( u.ms -- )`
 
 Finally, I've added a blocking `sleep` word that pauses execution for the
 number of milliseconds given.
@@ -796,10 +798,10 @@ these two locations to store the coordinates of the tail of the snake.
 Next we define two words for accessing memory locations representing the body
 of the snake.
 
-    : snake-x ( offset -- address )
+    : snake-x ( +n.offset -- a-addr )
       cells snake-x-head + ;
 
-    : snake-y ( offset -- address )
+    : snake-y ( +n.offset -- a-addr )
       cells snake-y-head + ;
 
 Just like the `number` word earlier, these two words are used to access
@@ -897,27 +899,27 @@ do -1 +loop` loops from `length` to `0` in increments of `-1`.
 The next section of code takes the keyboard input and changes the snake direction
 if appropriate.
 
-    : is-horizontal  direction @ dup
+    : is-horizontal ( -- flag ) direction @ dup
       left = swap
       right = or ;
 
-    : is-vertical  direction @ dup
+    : is-vertical   ( -- flag ) direction @ dup
       up = swap
       down = or ;
 
-    : turn-up     is-horizontal if up direction ! then ;
-    : turn-left   is-vertical if left direction ! then ;
-    : turn-down   is-horizontal if down direction ! then ;
-    : turn-right  is-vertical if right direction ! then ;
+    : turn-up     ( -- ) is-horizontal if up direction ! then ;
+    : turn-left   ( -- ) is-vertical if left direction ! then ;
+    : turn-down   ( -- ) is-horizontal if down direction ! then ;
+    : turn-right  ( -- ) is-vertical if right direction ! then ;
 
-    : change-direction ( key -- )
+    : change-direction ( c.key -- )
       37 over = if turn-left else
       38 over = if turn-up else
       39 over = if turn-right else
       40 over = if turn-down
       then then then then drop ;
 
-    : check-input
+    : check-input ( -- )
       last-key @ change-direction
       0 last-key ! ;
 
@@ -941,7 +943,7 @@ moving it to a new (random) location. Also, if the apple has been eaten we grow
 the snake.
 
     \ get random x or y position within playable area
-    : random-position ( -- pos )
+    : random-position ( -- +n.pos )
       width 4 - random 2 + ;
 
     : move-apple
@@ -996,7 +998,7 @@ collision has occured or not.
 
 The next two words are responsible for drawing the snake and apple.
 
-    : draw-snake
+    : draw-snake ( -- )
       length @ 0 do
         i snake-x @ i snake-y @ draw-black
       loop
@@ -1004,7 +1006,7 @@ The next two words are responsible for drawing the snake and apple.
       length @ snake-y @
       draw-white ;
 
-    : draw-apple
+    : draw-apple ( -- )
       apple-x @ apple-y @ draw-black ;
 
 `draw-snake` loops through each cell in the snake arrays, drawing a black pixel
