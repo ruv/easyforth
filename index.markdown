@@ -25,7 +25,7 @@ This book includes a simple implementation of Forth I wrote in JavaScript. It's 
 no means perfect, and is missing a lot of the functionality you'd expect in a real
 Forth system. It's just here to give you an easy way to try out the examples. (If
 you're a Forth expert, please
-[contribute here](https://github.com/skilldrick/easyforth) and make it better!)
+[contribute here](https://github.com/ruv/easyforth) and make it better!)
 
 I'm going to assume that you know at least one other programming language, and have
 a basic idea of how stacks work as a data structure.
