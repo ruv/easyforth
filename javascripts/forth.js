@@ -199,8 +199,10 @@ function Forth(next) {
     });
   }
 
-  addPredefinedWords(addToDictionary, readLines, function () {
-    next({
+  function q () { return eval( arguments[0] ) }
+
+  const forth_handler = {
+      q: q,
       readLine: readLine,
       readLines: readLines,
       keydown: function (keyCode) {
@@ -214,7 +216,12 @@ function Forth(next) {
         context.onMemoryChange = function (address, value) {
           cb(address, value, context.memory.getVariable("graphics"));
         };
-      }
-    });
-  });
+      },
+  }
+
+  addPredefinedWords(
+    addToDictionary,
+    readLines,
+    (() => next(forth_handler)),
+  );
 }

@@ -14,6 +14,9 @@ function Editor(selectorOrElement) {
     var selectedLine = null; // Set this to null to reset selected line
     var inputHidden = false;
 
+    $editor[0].forth = forth
+    $editor[0].q = function () { return eval( arguments[0] ) }
+
     function addLine(code) {
       selectedLine = null;
       lineBuffer.push(code);
