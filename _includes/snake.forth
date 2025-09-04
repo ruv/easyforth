@@ -93,7 +93,7 @@ variable length
 : turn-down   ( -- ) is-horizontal  if down   direction ! then ;
 : turn-right  ( -- ) is-vertical    if right  direction ! then ;
 
-: change-direction ( c.key -- )
+: change-direction ( char.key -- )
   37 over = if turn-left    else
   38 over = if turn-up      else
   39 over = if turn-right   else

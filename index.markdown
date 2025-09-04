@@ -173,7 +173,7 @@ how simple definitions work.
 Now we can start taking a look at some of Forth's predefined words. First,
 let's look at some words for manipulating the elements at the top of the stack.
 
-### `dup ( n -- n n )`
+### `dup ( x1 -- x1 x1 )`
 
 `dup` is short for "duplicate" -- it duplicates the top element of the stack. For example,
 try this out:
@@ -186,7 +186,7 @@ You should end up with the following stack:
 
 {% include stack.html stack="1 2 3 3" %}
 
-### `drop ( n -- )`
+### `drop ( x -- )`
 
 `drop` simply drops the top element of the stack. Running:
 
@@ -198,7 +198,7 @@ gives you a stack of:
 
 {% include editor.html size="small"%}
 
-### `swap ( n1 n2 -- n2 n1 )`
+### `swap ( x1 x2 -- x2 x1 )`
 
 `swap`, as you may have guessed, swaps the top two elements of the stack. For example:
 
@@ -210,7 +210,7 @@ will give you:
 
 {% include editor.html size="small"%}
 
-### `over ( n1 n2 -- n1 n2 n1 )`
+### `over ( x1 x2 -- x1 x2 x1 )`
 
 `over` is a bit less obvious: it takes the second element from the top of the
 stack and duplicates it to the top of the stack. Running this:
@@ -223,7 +223,7 @@ will result in this:
 
 {% include editor.html size="small"%}
 
-### `rot ( n1 n2 n3 -- n2 n3 n1 )`
+### `rot ( x1 x2 x3 -- x2 x3 x1 )`
 
 Finally, `rot` "rotates" the top _three_ elements of the stack. The third
 element from the top of the stack gets moved to the top of the stack, pushing
@@ -261,7 +261,7 @@ we do the same with `2` and `3`. Next we push `4`, `5`, and `6` onto the stack.
 We then pop them off and output them one-by-one. That's why the last three
 numbers in the output are reversed: the stack is last in, first out.
 
-### `emit ( c -- )`
+### `emit ( char -- )`
 
 `emit` can be used to output numbers as ascii characters. Just like `.` outputs
 the number at the top of the stack, `emit` outputs that number as an ascii
@@ -916,7 +916,7 @@ if appropriate.
     : turn-down   ( -- ) is-horizontal if down direction ! then ;
     : turn-right  ( -- ) is-vertical if right direction ! then ;
 
-    : change-direction ( c.key -- )
+    : change-direction ( char.key -- )
       37 over = if turn-left else
       38 over = if turn-up else
       39 over = if turn-right else
