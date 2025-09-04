@@ -82,7 +82,10 @@ stack, even though there's only _one_ element on the stack! This results in a
 +  <span class="output">Stack underflow</span>
 </div>
 
-Forth doesn't force you to type every token as a separate line. Type the
+Forth doesn't force you to type every
+<a href="https://en.wiktionary.org/wiki/lexeme#English:_token_or_similar_entity,_in_computing">lexeme</a>
+as a separate line.
+Type the
 following into the next editor, followed by the `Enter` key:
 
     123 456 +
