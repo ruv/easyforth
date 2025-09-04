@@ -126,7 +126,7 @@ function Editor(selectorOrElement) {
     $editor.click(function (e) {
       // Don't include clicks on prev lines or we won't be able to select that text
       if ($(e.target).closest('.prev-lines').length === 0) {
-        $input.focus();
+        $input[0].focus();
       }
     });
 
@@ -138,7 +138,7 @@ function Editor(selectorOrElement) {
         var windowHeight = $window.height();
         var inputInWindow = inputTop > scrollTop && inputTop < scrollTop + windowHeight;
         if (inputInWindow) {
-          $input.focus();
+          $input[0].focus( { preventScroll: true, } );
         }
       });
     }
