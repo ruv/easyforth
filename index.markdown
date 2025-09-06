@@ -119,7 +119,10 @@ Most Forth words affect the stack in some way. Some take values off the stack,
 some leave new values on the stack, and some do a mixture of both. These "stack
 effects" are commonly represented using comments of the form `( before -- after )`.
 For example, `+` is `( n1 n2 -- n.sum )` - `n1` and `n2` are the top two numbers
-on the stack, and `n.sum` is the value left on the stack, `n` is a data type symbol.
+on the stack, and `n.sum` is the value left on the stack, `n` is a data type symbol,
+`1` in `n1` is a subscript, as is `2` in `n2` and `sum` in `n.sum`.
+These comments are also known as _stack diagrams_,
+and their syntax is called _stack notation_.
 See also: Forth-2012
 [2.2.2 Stack notation](https://forth-standard.org/standard/notation#subsection.2.2.2),
 [3.1 Data types](https://forth-standard.org/standard/usage#usage:data).
@@ -312,7 +315,7 @@ You should see the following output
 
 We can combine `."`, `.`, `cr`, and `emit` to build up more complex output:
 
-    : print-stack-top  cr dup ." The top of the stack is " .
+    : print-stack-top ( n1 -- n1 )  cr dup ." The top of the stack is " .
       cr ." which looks like '" dup emit ." ' in ascii  " ;
     48 print-stack-top
 
@@ -388,7 +391,7 @@ stack. In this case, the top number is 5, and the other is whatever was placed
 on the stack before calling `buzz?`. Therefore, `5 mod 0 =` is a boolean
 expression that checks to see if the top of the stack is divisible by 5.
 
-    : buzz?  5 mod 0 = if ." Buzz" then ;
+    : buzz? ( n -- )  5 mod 0 = if ." Buzz" then ;
     3 buzz?
     4 buzz?
     5 buzz?
@@ -412,7 +415,7 @@ stack when it checks to see if it's true or false.
 `if else then` is equivalent to an `if/else` statement in most languages. Here's
 an example of its use:
 
-    : is-it-zero?  0 = if ." Yes!" else ." No!" then ;
+    : is-it-zero? ( x -- )  0 = if ." Yes!" else ." No!" then ;
     0 is-it-zero?
     1 is-it-zero?
     2 is-it-zero?
@@ -438,7 +441,7 @@ The top two values on the stack give the starting value (inclusive) and ending
 value (exclusive) for the `i` value. The starting value is taken from the top
 of the stack. Here's an example:
 
-    : loop-test  10 0 do i . loop ;
+    : loop-test ( -- )  10 0 do i . loop ;
     loop-test
 
 {% include editor.html size="small"%}
@@ -458,10 +461,10 @@ The expression `10 0 do i . loop` is roughly equivalent to:
 We can write the classic [Fizz Buzz](https://en.wikipedia.org/wiki/Fizz_buzz)
 program easily using a `do loop`:
 
-    : fizz?  3 mod 0 = dup if ." Fizz" then ;
-    : buzz?  5 mod 0 = dup if ." Buzz" then ;
-    : fizz-buzz?  dup fizz? swap buzz? or invert ;
-    : do-fizz-buzz  25 1 do cr i fizz-buzz? if i . then loop ;
+    : fizz? ( n -- flag )  3 mod 0 = dup if ." Fizz" then ;
+    : buzz? ( n -- flag )  5 mod 0 = dup if ." Buzz" then ;
+    : fizz-buzz? ( n -- flag )  dup fizz? swap buzz? or invert ;
+    : do-fizz-buzz ( -- )  25 1 do cr i fizz-buzz? if i . then loop ;
     do-fizz-buzz
 
 {% include editor.html %}
@@ -498,8 +501,8 @@ example below might help you to understand how it works. All we're doing here
 is executing each word of the definition of `fizz-buzz?` on a separate line. As
 you execute each line, watch the stack to see how it changes:
 
-    : fizz?  3 mod 0 = dup if ." Fizz" then ;
-    : buzz?  5 mod 0 = dup if ." Buzz" then ;
+    : fizz? ( n -- flag )  3 mod 0 = dup if ." Fizz" then ;
+    : buzz? ( n -- flag )  5 mod 0 = dup if ." Buzz" then ;
     4
     dup
     fizz?
@@ -692,7 +695,7 @@ back to the matching `begin`. If it is non-zero, execution continues after `unti
 
 Here's an example of using `begin until` to print key codes:
 
-    : print-keycode  begin key dup . 32 = until ;
+    : print-keycode ( -- )  begin key dup . 32 = until ;
     print-keycode
 
 {% include editor.html size="small"%}
@@ -740,10 +743,10 @@ for example, to draw a white pixel in the top-left corner you could run
 
 The game uses the following words to draw to the canvas:
 
-    : convert-x-y ( n.x n.y -- n.offset )  24 cells * + ;
-    : draw ( +n.color n.x n.y -- )  convert-x-y graphics + ! ;
-    : draw-white ( n.x n.y -- )  1 rot rot draw ;
-    : draw-black ( n.x n.y -- )  0 rot rot draw ;
+    : convert-x-y ( +n.x +n.y -- +n.offset )  24 cells * + ;
+    : draw ( u.color +n.x +n.y -- )  convert-x-y graphics + ! ;
+    : draw-white ( +n.x +n.y -- )  1 rot rot draw ;
+    : draw-black ( +n.x +n.y -- )  0 rot rot draw ;
 
 For example, `3 4 draw-white` draws a white pixel at the coordinates (3, 4). The
 y coordinate is multiplied by 24 to get the row, then the x coordinated is added
@@ -802,10 +805,10 @@ these two locations to store the coordinates of the tail of the snake.
 Next we define two words for accessing memory locations representing the body
 of the snake.
 
-    : snake-x ( +n.offset -- a-addr )
+    : snake-x ( +n.x -- a-addr )
       cells snake-x-head + ;
 
-    : snake-y ( +n.offset -- a-addr )
+    : snake-y ( +n.y -- a-addr )
       cells snake-y-head + ;
 
 Just like the `number` word earlier, these two words are used to access
@@ -819,7 +822,7 @@ We use constants to refer to the four directions (`left`, `up`, `right`, and
 
 After this we initialize everything:
 
-    : draw-walls
+    : draw-walls ( -- )
       width 0 do
         i 0 draw-black
         i height 1 - draw-black
@@ -829,7 +832,7 @@ After this we initialize everything:
         width 1 - i draw-black
       loop ;
 
-    : initialize-snake
+    : initialize-snake ( -- )
       4 length !
       length @ 1 + 0 do
         12 i - i snake-x !
@@ -837,11 +840,11 @@ After this we initialize everything:
       loop
       right direction ! ;
 
-    : set-apple-position apple-x ! apple-y ! ;
+    : set-apple-position ( +n.x +n.y -- )  apple-x ! apple-y ! ;
 
-    : initialize-apple  4 4 set-apple-position ;
+    : initialize-apple ( -- )  4 4 set-apple-position ;
 
-    : initialize
+    : initialize ( -- )
       width 0 do
         height 0 do
           j i draw-white
@@ -868,12 +871,12 @@ initialization words.
 
 Here's the code for moving the snake based on the current value of `direction`:
 
-    : move-up  -1 snake-y-head +! ;
-    : move-left  -1 snake-x-head +! ;
-    : move-down  1 snake-y-head +! ;
-    : move-right  1 snake-x-head +! ;
+    : move-up     ( -- )  -1 snake-y-head +! ;
+    : move-left   ( -- )  -1 snake-x-head +! ;
+    : move-down   ( -- )   1 snake-y-head +! ;
+    : move-right  ( -- )   1 snake-x-head +! ;
 
-    : move-snake-head  direction @
+    : move-snake-head ( -- )  direction @ ( x )
       left over  = if move-left else
       up over    = if move-up else
       right over = if move-right else
@@ -881,7 +884,7 @@ Here's the code for moving the snake based on the current value of `direction`:
       then then then then drop ;
 
     \ Move each segment of the snake forward by one
-    : move-snake-tail  0 length @ do
+    : move-snake-tail ( -- )  0 length @ do
         i snake-x @ i 1 + snake-x !
         i snake-y @ i 1 + snake-y !
       -1 +loop ;
@@ -903,11 +906,11 @@ do -1 +loop` loops from `length` to `0` in increments of `-1`.
 The next section of code takes the keyboard input and changes the snake direction
 if appropriate.
 
-    : is-horizontal ( -- flag ) direction @ dup
+    : is-horizontal ( -- flag ) direction @ dup ( x1 x1 )
       left = swap
       right = or ;
 
-    : is-vertical   ( -- flag ) direction @ dup
+    : is-vertical   ( -- flag ) direction @ dup ( x1 x1 )
       up = swap
       down = or ;
 
@@ -950,12 +953,12 @@ the snake.
     : random-position ( -- +n.pos )
       width 4 - random 2 + ;
 
-    : move-apple
+    : move-apple ( -- )
       apple-x @ apple-y @ draw-white
       random-position random-position
       set-apple-position ;
 
-    : grow-snake  1 length +! ;
+    : grow-snake ( -- )  1 length +! ;
 
     : check-apple ( -- flag )
       snake-x-head @ apple-x @ =
@@ -985,10 +988,10 @@ Next we see if the snake has collided with the walls or itself.
 
     : check-collision ( -- flag )
       \ get current x/y position
-      snake-x-head @ snake-y-head @
+      snake-x-head @ snake-y-head @  ( +n.x +n.y )
 
       \ get color at current position
-      convert-x-y graphics + @
+      convert-x-y graphics + @  ( u.color )
 
       \ leave boolean flag on stack
       0 = ;
@@ -1038,7 +1041,7 @@ words defined above in turn.
       until
       ." Game Over" ;
 
-    : start  initialize game-loop ;
+    : start ( -- )  initialize game-loop ;
 
 The `begin/until` loop uses the boolean returned by `check-collision` to see
 whether to continue looping or to exit the loop. When the loop is exited the

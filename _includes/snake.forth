@@ -18,14 +18,14 @@ variable apple-y
 variable direction
 variable length
 
-: snake-x ( +n.offset -- a-addr )
+: snake-x ( +n.x -- a-addr )
   cells snake-x-head + ;
 
-: snake-y ( +n.offset -- a-addr )
+: snake-y ( +n.y -- a-addr )
   cells snake-y-head + ;
 
 : convert-x-y ( +n.x +n.y -- +n.offset )  width cells * + ;
-: draw ( +n.color +n.x +n.y -- )  convert-x-y graphics + ! ;
+: draw ( u.color +n.x +n.y -- )  convert-x-y graphics + ! ;
 : draw-white ( +n.x +n.y -- )  1 rot rot draw ;
 : draw-black ( +n.x +n.y -- )  0 rot rot draw ;
 
@@ -126,10 +126,10 @@ variable length
 
 : check-collision ( -- flag )
   \ get current x/y position
-  snake-x-head @ snake-y-head @
+  snake-x-head @ snake-y-head @  ( +n.x +n.y )
 
   \ get color at current position
-  convert-x-y graphics + @
+  convert-x-y graphics + @  ( u.color )
 
   \ leave boolean flag on stack
   0 = ;
