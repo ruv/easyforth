@@ -336,9 +336,20 @@ however, first we need to understand booleans in Forth.
 
 ### Booleans
 
-There's actually no boolean type in Forth. The number `0` is treated as false,
-and any other number is true, although the canonical true value is `-1` (all
-boolean operators return `0` or `-1`).
+The boolean type in Forth is called _flag_.
+A `false` flag is a value with all bits cleared,
+and a `true` flag is a value with all bits set
+(see also: Forth-2012 [3.1.3.1 Flags](https://forth-standard.org/standard/usage#usage:flags)).
+
+The `false` value is always equivalent to the number `0` (zero),
+and `true` is typically equivalent to the number `-1`
+(due to the [two's complement](https://en.wikipedia.org/wiki/Signed_number_representations#Two's_complement)
+representation of signed integer numbers).
+
+Note that all boolean operators return `true` or `false`,
+but all control-flow words accept **any non-zero** value as logical true,
+and only zero (`false`) as logical false.
+
 
 To test if two numbers are equal, you can use `=`:
 
@@ -366,17 +377,17 @@ vice versa for `>`:
 
 The boolean operators And, Or, and Not are available as `and`, `or`, and `invert`:
 
-    3 4 < 20 30 < and .
-    3 4 < 20 30 > or .
-    3 4 < invert .
+    3 4 <  20 30 <  and .
+    3 4 <  20 30 >  or .
+    3 4 <  invert .
 
 The first line is the equivalent of `3 < 4 & 20 < 30` in a C-based language.
 The second line is the equivalent of `3 < 4 | 20 > 30`. The third line is the
 equivalent of `!(3 < 4)`.
+(apart from printing the results, of course)
 
-`and`, `or`, and `invert` are all bitwise operations. For well-formed flags
-(`0` and `-1`) they'll work as expected, but they'll give incorrect results for
-arbitrary numbers.
+`and`, `or`, and `invert` are *bitwise* operations.
+But they also work as expected for flags (`false` and `true`).
 
 {% include editor.html size="small"%}
 
@@ -408,7 +419,7 @@ It's important to note that the `then` word marks the end of the `if` statement.
 This makes it equivalent to `fi` in Bash or `end` in Ruby, for example.
 
 Another important thing to realize is that `if` consumes the top value on the
-stack when it checks to see if it's true or false.
+stack when it checks to see if it's non-zero or zero.
 
 ### `if else then`
 
