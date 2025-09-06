@@ -474,8 +474,8 @@ program easily using a `do loop`:
 
     : fizz? ( n -- flag )  3 mod 0 = dup if ." Fizz" then ;
     : buzz? ( n -- flag )  5 mod 0 = dup if ." Buzz" then ;
-    : fizz-buzz? ( n -- flag )  dup fizz? swap buzz? or invert ;
-    : do-fizz-buzz ( -- )  25 1 do cr i fizz-buzz? if i . then loop ;
+    : fizz-buzz? ( n -- flag )  dup fizz? swap buzz? or ;
+    : do-fizz-buzz ( -- )  25 1 do cr i fizz-buzz? invert if i . then loop ;
     do-fizz-buzz
 
 {% include editor.html %}
@@ -497,15 +497,15 @@ stack consists of the original value, and the boolean returned by `fizz?`.
 boolean is underneath. Next we call `buzz?`, which replaces the top-of-stack
 value with a boolean flag. Now the top two values on the stack are booleans
 representing whether the number was divisible by 3 or 5.  After this, we call
-`or` to see if either of these is true, and `invert` to negate this value.
+`or` to see if either of these is true.
 Logically, the body of `fizz-buzz?` is equivalent to:
 
-    !(x % 3 == 0 || x % 5 == 0)
+    (x % 3 == 0 || x % 5 == 0)
 
-Therefore, `fizz-buzz?` returns a boolean indicating if the argument is not
-divisible by 3 or 5, and thus should be printed.  Finally, `do-fizz-buzz` loops
+Therefore, `fizz-buzz?` returns a boolean indicating if the argument is
+divisible by 3 or 5, and thus should not be printed.  Finally, `do-fizz-buzz` loops
 from 1 to 25, calling `fizz-buzz?` on `i`, and outputting `i` if `fizz-buzz?`
-returns true.
+returns false.
 
 If you're having trouble figuring out what's going on inside `fizz-buzz?`, the
 example below might help you to understand how it works. All we're doing here
@@ -532,10 +532,9 @@ Here's how each line affects the stack:
     swap      0 4 <- Top
     buzz?     0 0 <- Top
     or        0 <- Top
-    invert    -1 <- Top
 
 Remember, the final value on the stack is the return value of the `fizz-buzz?`
-word. In this case, it's true, because the number was not divisible by 3 or 5,
+word. In this case, it's false, because the number was not divisible by 3 or 5,
 and so _should_ be printed.
 
 Here's the same thing but starting with 5:
@@ -546,7 +545,6 @@ Here's the same thing but starting with 5:
     swap      0 5 <- Top
     buzz?     0 -1 <- Top
     or        -1 <- Top
-    invert    0 <- Top
 
 In this case the original top-of-stack value was divisible by 5, so nothing
 should be printed.
