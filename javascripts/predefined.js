@@ -74,6 +74,11 @@ function addPredefinedWords(addToDictionary, readLines, next) {
     context.stack.push(b | a);
   });
 
+  addToDictionary("xor", function (context) {
+    var a = context.stack.pop(), b = context.stack.pop();
+    context.stack.push(b ^ a);
+  });
+
   addToDictionary("invert", function (context) {
     // invert is bitwise not
     context.stack.push(~context.stack.pop());
@@ -183,6 +188,8 @@ function addPredefinedWords(addToDictionary, readLines, next) {
   });
 
   readLines([
+    "0      constant false",
+    "0 0 =  constant true",
     ": cells   1 * ;",
     ": cr      10 emit ;",
     ": space   32 emit ;",

@@ -387,7 +387,11 @@ equivalent of `!(3 < 4)`.
 (apart from printing the results, of course)
 
 `and`, `or`, and `invert` are *bitwise* operations.
-But they also work as expected for flags (`false` and `true`).
+But they also work as expected for flags (the _true_ and _false_ values).
+
+There are also the words `true ( -- true )` and `false ( -- false )`,
+which return the flags _true_ and _false_ respectively.
+
 
 {% include editor.html size="small"%}
 
