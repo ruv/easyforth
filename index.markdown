@@ -495,13 +495,15 @@ be output, otherwise there will be no output.
 `buzz?` does the same thing but with 5, and outputs the string `"Buzz"`.
 
 `fizz-buzz?` calls `dup` to duplicate the value on top of the stack, then calls
-`fizz?`, converting the top copy into a boolean. After this, the top of the
-stack consists of the original value, and the boolean returned by `fizz?`.
+`fizz?`.
+After this, the top of the stack consists of the original value,
+and the boolean returned by `fizz?`, as `( n flag1 )`.
 `swap` swaps these, so the original top-of-stack value is back on top, and the
-boolean is underneath. Next we call `buzz?`, which replaces the top-of-stack
-value with a boolean flag. Now the top two values on the stack are booleans
-representing whether the number was divisible by 3 or 5.  After this, we call
-`or` to see if either of these is true.
+boolean is underneath, as `( flag1 n )`.
+Next we call `buzz?`, which replaces the top-of-stack
+value with a boolean value. Now the top two values on the stack are booleans
+representing whether the number was divisible by 3 or 5, as `( flag1 flag2 )`.
+After this, we call `or` to see if either of these is true, resulting in a boolean value `( flag3 )`.
 Logically, the body of `fizz-buzz?` is equivalent to:
 
     (x % 3 == 0 || x % 5 == 0)
