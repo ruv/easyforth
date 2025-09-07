@@ -655,16 +655,19 @@ Use the `create` word to define the start of the region, and `allot` to reserve 
 
 This example creates a word called `numbers`, which returns the location of the memory region,
 and reserves four memory cells for this region.
-(`cells` just multiplies by the cell-width, which is 1 in this implementation.)
+The word `cells ( n1 -- n2 )` just multiplies its argument by the cell-size,
+which is 1 in this implementation.
 
-`numbers 0 +` gives the location of the first cell in the array. `10 numbers 0 + !`
-stores the value `10` in the first cell of the array.
+`numbers 0 cells +` gives the location of the first cell in the array.
+`numbers 1 cells +` gives the location of the second cell in the array.
+`20 numbers 1 cells + !` stores the value `20` in the second cell of the array.
+Thus, in array indices we use numbering starting from zero.
 
 We can easily write words to simplify array access:
 
     create numbers
     4 cells allot
-    : number  ( n.offset -- a-addr )  cells numbers + ;
+    : number  ( +n.zero-based-index -- a-addr )  cells numbers + ;
 
     10 0 number !
     20 1 number !
@@ -673,11 +676,17 @@ We can easily write words to simplify array access:
 
     2 number ?
 
+Note that in the stack diagram for the word `number` above,
+_+n_ is the [data type symbol](https://forth-standard.org/standard/usage#table:datatypes)
+for a **non-negative** integer number,
+_a-addr_ — for an aligned address.
+
 {% include editor.html size="small"%}
 
-`number` takes an offset into `numbers` and returns the memory location at that
-offset. `30 2 number !` stores `30` at offset `2` in `numbers`, and `2 number ?`
-prints the value at offset `2` in `numbers`.
+`number` takes an index into `numbers` and returns the memory location
+of the corresponding cell.
+`30 2 number !` stores `30` at index `2` in `numbers`, and `2 number ?`
+prints the value at index `2` in `numbers`.
 
 
 ## Keyboard Input
@@ -761,9 +770,10 @@ The game uses the following words to draw to the canvas:
     : draw-white ( +n.x +n.y -- )  1 rot rot draw ;
     : draw-black ( +n.x +n.y -- )  0 rot rot draw ;
 
-For example, `3 4 draw-white` draws a white pixel at the coordinates (3, 4). The
-y coordinate is multiplied by 24 to get the row, then the x coordinated is added
-to get the column.
+For example, `3 4 draw-white` draws a white pixel at the coordinates (3, 4).
+In `convert-x-y`, the y coordinate is multiplied by 24 to get the row,
+then the x coordinated is added to get the column,
+and then the result is multiplied by the cell size to get the offset.
 
 #### Non-Blocking Keyboard Input
 
@@ -871,7 +881,8 @@ After this we initialize everything:
 respectively.
 
 `initialize-snake` sets the `length` variable to `4`, then loops from `0` to
-`length + 1` filling in the starting snake positions. The snake positions are
+the length value (inclusive, giving length+1 iterations)
+filling in the starting snake positions. The snake positions are
 always kept one longer than the length so we can grow the snake easily.
 
 `set-apple-position` and `initialize-apple` set the initial position of the
@@ -1030,7 +1041,7 @@ The next two words are responsible for drawing the snake and apple.
       apple-x @ apple-y @ draw-black ;
 
 `draw-snake` loops through each cell in the snake arrays, drawing a black pixel
-for each one. After that it draws a white pixel at an offset of `length`. The
+for each one. After that it draws a white pixel at an index equal to `length`. The
 last part of the tail is at `length - 1` into the array so `length` holds the
 previous last tail segment.
 
