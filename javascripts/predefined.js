@@ -191,10 +191,14 @@ function addPredefinedWords(addToDictionary, readLines, next) {
     "0      constant false",
     "0 0 =  constant true",
     ": cells   1 * ;",
+    ": 0!      0 swap ! ;",
+    ": nip     swap drop ;",
     ": cr      10 emit ;",
     ": space   32 emit ;",
     ": spaces  0 do space loop ;",
+    ": <>      = invert ;",
     ": 0=      0 = ;",
+    ": 0<>     0 <> ;",
     ": 0<      0 < ;",
     ": 0>      0 > ;",
     ": ?dup    dup if dup then ;",
@@ -215,5 +219,15 @@ function addPredefinedWords(addToDictionary, readLines, next) {
     "create  graphics", // start of graphics memory
     "576 cells allot", // graphics memory takes 24 * 24 = 576 cells altogether
     "variable  last-key", // create last-key variable for keyboard input
+
+    ": key? ( -- flag )  last-key @ 0<> ;",
+    ": key ( -- key )  key? if last-key @ else key then last-key 0! ;",
+
+    // `ekey ekey>fkey drop` should return these codes for the events from cursor control keys
+    // (`ekey` and `ekey>fkey` are not implemented yet, but `key` returns these codes)
+    "37 constant k-left",
+    "38 constant k-up",
+    "39 constant k-right",
+    "40 constant k-down",
   ], next);
 }
