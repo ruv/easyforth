@@ -756,7 +756,7 @@ for example, to draw a white pixel in the top-left corner you could run
 
 The game uses the following words to draw to the canvas:
 
-    : convert-x-y ( +n.x +n.y -- +n.offset )  24 cells * + ;
+    : convert-x-y ( +n.x +n.y -- +n.offset )  24 * + cells ;
     : draw ( u.color +n.x +n.y -- )  convert-x-y graphics + ! ;
     : draw-white ( +n.x +n.y -- )  1 rot rot draw ;
     : draw-black ( +n.x +n.y -- )  0 rot rot draw ;

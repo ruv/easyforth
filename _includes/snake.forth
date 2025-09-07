@@ -24,7 +24,7 @@ variable length
 : snake-y ( +n.y -- a-addr )
   cells snake-y-head + ;
 
-: convert-x-y ( +n.x +n.y -- +n.offset )  width cells * + ;
+: convert-x-y ( +n.x +n.y -- +n.offset )  width * + cells ;
 : draw ( u.color +n.x +n.y -- )  convert-x-y graphics + ! ;
 : draw-white ( +n.x +n.y -- )  1 rot rot draw ;
 : draw-black ( +n.x +n.y -- )  0 rot rot draw ;
