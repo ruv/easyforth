@@ -104,8 +104,7 @@ variable length
   then then then then drop ;
 
 : check-input ( -- )
-  last-key @ change-direction
-  0 last-key ! ;
+  key? if key change-direction then ;
 
 \ get random x or y position within playable area
 : random-position ( -- +n.pos )

@@ -691,7 +691,8 @@ prints the value at index `2` in `numbers`.
 
 ## Keyboard Input
 
-Forth has a special word called `key`, which is used for accepting keyboard input.
+Forth has a special word called `key` with stack effect `( -- char )`,
+which is used for receiving keyboard input.
 When the `key` word is executed, execution is paused until a key is pressed. Once
 a key is pressed, the key code of that key is pushed onto the stack. Try out the
 following:
@@ -706,6 +707,10 @@ you should see the keycode for that key, `65`, appear as output on the current l
 Now hit `B`, then `C`, and you should see the following:
 
 <div class="editor-preview editor-text">key . key . key . <span class="output">65 66 67  ok</span></div>
+
+There is also a word called `key? ( -- flag )`, which checks if a key has been pressed
+and is not received by `key` yet.
+If `key?` returns true, then subsequent execution of `key` is always non-blocking.
 
 
 ### Printing keys with `begin until`
@@ -774,12 +779,6 @@ For example, `3 4 draw-white` draws a white pixel at the coordinates (3, 4).
 In `convert-x-y`, the y coordinate is multiplied by 24 to get the row,
 then the x coordinated is added to get the column,
 and then the result is multiplied by the cell size to get the offset.
-
-#### Non-Blocking Keyboard Input
-
-The Forth word `key` blocks, so is unsuitable for a game like this. I've added
-a variable called `last-key` which always holds the value of the last key to be
-pressed. `last-key` is only updated while the interpreter is running Forth code.
 
 #### Random Number Generation
 
@@ -955,8 +954,7 @@ if appropriate.
       then then then then drop ;
 
     : check-input ( -- )
-      last-key @ change-direction
-      0 last-key ! ;
+      key? if key change-direction then ;
 
 `is-horizontal` and `is-vertical` check the current status of the `direction`
 variable to see if it's a horizontal or vertical direction.
@@ -967,9 +965,13 @@ is valid. For example, if the snake is moving horizontally, setting a new
 direction of `left` or `right` doesn't make sense.
 
 `change-direction` takes a key and calls the appropriate `turn-*` word if the
-key was one of the arrow keys. `check-input` does the work of getting the last
-key from the `last-key` pseudo-variable, calling `change-direction`, then setting
-`last-key` to 0 to indicate that the most recent keypress has been dealt with.
+key was one of the arrow keys.
+`k-left`, `k-up`, `k-right`, and `k-down` are constants for the key codes
+for the arrow keys.
+
+`check-input` receives a key code only if a key has been pressed (and not yet received),
+so as not to wait for the next keypress.
+
 
 #### The Apple
 
