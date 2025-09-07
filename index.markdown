@@ -810,10 +810,12 @@ The start of the code just sets up some arrays, variables, and constants:
     variable apple-x
     variable apple-y
 
-    0 constant left
-    1 constant up
-    2 constant right
-    3 constant down
+    0 \ direction codes
+    1+ dup constant left
+    1+ dup constant up
+    1+ dup constant right
+    1+ dup constant down
+    drop
 
     24 constant width
     24 constant height
@@ -901,10 +903,11 @@ Here's the code for moving the snake based on the current value of `direction`:
     : move-right  ( -- )   1 snake-x-head +! ;
 
     : move-snake-head ( -- )  direction @ ( x )
-      left over  = if move-left else
-      up over    = if move-up else
-      right over = if move-right else
-      down over  = if move-down
+      left  over = if move-left   else
+      up    over = if move-up     else
+      right over = if move-right  else
+      down  over = if move-down   else
+        \ do nothing
       then then then then drop ;
 
     \ Move each segment of the snake forward by one
@@ -938,16 +941,17 @@ if appropriate.
       up = swap
       down = or ;
 
-    : turn-up     ( -- ) is-horizontal if up direction ! then ;
-    : turn-left   ( -- ) is-vertical if left direction ! then ;
-    : turn-down   ( -- ) is-horizontal if down direction ! then ;
-    : turn-right  ( -- ) is-vertical if right direction ! then ;
+    : turn-up     ( -- ) is-horizontal  if up     direction ! then ;
+    : turn-left   ( -- ) is-vertical    if left   direction ! then ;
+    : turn-down   ( -- ) is-horizontal  if down   direction ! then ;
+    : turn-right  ( -- ) is-vertical    if right  direction ! then ;
 
-    : change-direction ( char.key -- )
-      37 over = if turn-left else
-      38 over = if turn-up else
-      39 over = if turn-right else
-      40 over = if turn-down
+    : change-direction ( u.fkey -- )
+      k-left  over = if turn-left    else
+      k-up    over = if turn-up      else
+      k-right over = if turn-right   else
+      k-down  over = if turn-down    else
+        \ do nothing
       then then then then drop ;
 
     : check-input ( -- )

@@ -7,10 +7,12 @@ create snake-y-head
 variable apple-x
 variable apple-y
 
-0 constant left
-1 constant up
-2 constant right
-3 constant down
+0 \ direction codes
+1+ dup constant left
+1+ dup constant up
+1+ dup constant right
+1+ dup constant down
+drop
 
 24 constant width
 24 constant height
@@ -40,10 +42,10 @@ variable length
   loop ;
 
 : initialize-snake ( -- )
-  4 length !
+  4  width 2/ min  length !
   length @ 1 + 0 do
-    12 i - i snake-x !
-    12 i snake-y !
+    width  2/ i -   i snake-x !
+    height 2/       i snake-y !
   loop
   right direction ! ;
 
@@ -93,11 +95,11 @@ variable length
 : turn-down   ( -- ) is-horizontal  if down   direction ! then ;
 : turn-right  ( -- ) is-vertical    if right  direction ! then ;
 
-: change-direction ( char.key -- )
-  37 over = if turn-left    else
-  38 over = if turn-up      else
-  39 over = if turn-right   else
-  40 over = if turn-down    else
+: change-direction ( u.fkey -- )
+  k-left  over = if turn-left    else
+  k-up    over = if turn-up      else
+  k-right over = if turn-right   else
+  k-down  over = if turn-down    else
     \ do nothing
   then then then then drop ;
 
