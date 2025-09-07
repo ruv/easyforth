@@ -381,7 +381,7 @@ The boolean operators And, Or, and Not are available as `and`, `or`, and `invert
     3 4 <  20 30 >  or .
     3 4 <  invert .
 
-The first line is the equivalent of `3 < 4 & 20 < 30` in a C-based language.
+The first line is the equivalent of `3 < 4 & 20 < 30` in a C-like language.
 The second line is the equivalent of `3 < 4 | 20 > 30`. The third line is the
 equivalent of `!(3 < 4)`.
 (apart from printing the results, of course)
@@ -448,7 +448,7 @@ and the else clause (alternative) is everything between `else` and `then`.
 
 ### `do loop`
 
-`do loop` in Forth most closely resembles a `for` loop in most C-based languages.
+`do loop` in Forth most closely resembles a `for` loop in most C-like languages.
 In the body of a `do loop`, the special word `i` pushes the current loop index
 onto the stack.
 
@@ -600,7 +600,7 @@ and pushes that value onto the stack. If you've used C or C++, you can think of
 
 The word `?` is defined as `@ .` and it prints the current value of a variable.
 The word `+!` is used to increase the value of a variable by a certain amount
-(like `+=` in C-based languages).
+(like `+=` in C-like languages).
 
     variable balance
     123 balance !
@@ -702,7 +702,7 @@ Now hit `B`, then `C`, and you should see the following:
 ### Printing keys with `begin until`
 
 Forth has another kind of loop called `begin until`. This works like a `while`
-loop in C-based languages. Every time the word `until` is hit, the interpreter
+loop in C-like languages. Every time the word `until` is hit, the interpreter
 checks to see if the top of the stack is non-zero (true). If it is zero, it jumps
 back to the matching `begin`. If it is non-zero, execution continues after `until`.
 
