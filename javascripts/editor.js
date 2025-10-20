@@ -133,6 +133,10 @@ function Editor(selectorOrElement) {
     var isMobile = window.matchMedia("only screen and (max-width: 720px)").matches;
     if (!isMobile) {
       $window.scroll(function () {
+        if (!document.activeElement.classList.contains('editor-text')) {
+          // don't try to change the focus to an editor if the active element is not an editor
+          return;
+        }
         var inputTop = $input.offset().top;
         var scrollTop = $window.scrollTop();
         var windowHeight = $window.height();
