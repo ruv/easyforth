@@ -132,7 +132,11 @@ function Editor(selectorOrElement) {
 
     var isMobile = window.matchMedia("only screen and (max-width: 720px)").matches;
     if (!isMobile) {
+      let _ignore_scroll = false ; // to disable the auto-focus feature for a short time
       $window.scroll(function () {
+        if (_ignore_scroll) {
+          return;
+        }
         if (!document.activeElement.classList.contains('editor-text')) {
           // don't try to change the focus to an editor if the active element is not an editor
           return;
@@ -143,6 +147,8 @@ function Editor(selectorOrElement) {
         var inputInWindow = inputTop > scrollTop && inputTop < scrollTop + windowHeight;
         if (inputInWindow) {
           $input[0].focus( { preventScroll: true, } );
+          _ignore_scroll = true; // to ignore the possible scroll events from hiding/showing the on-screen keyboard
+          setTimeout( () => { _ignore_scroll = false; }, 400 ); // allow auto-focus again after a short time
         }
       });
     }
